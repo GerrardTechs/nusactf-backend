@@ -19,9 +19,11 @@ export async function buildApp() {
   await fastify.register(supabasePlugin);
   await fastify.register(rateLimitPlugin);
 
-  await fastify.register(registerApiRoutes);
-  await fastify.register(registerChallengeRoutes);
-
+  await fastify.register(async (apiInstance) => {
+    await apiInstance.register(registerApiRoutes);
+    await apiInstance.register(registerChallengeRoutes);
+  }, { prefix: '/api' });
+  
   fastify.setErrorHandler((error, _request, reply) => {
     if (isAppError(error)) {
       return reply.code(error.statusCode).send({

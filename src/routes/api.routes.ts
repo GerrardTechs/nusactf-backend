@@ -33,5 +33,5 @@ export async function registerApiRoutes(fastify: FastifyInstance): Promise<void>
       },
       handler: submitFlagHandler,
     });
-  }, { prefix: "/api" });
+  },);
 }

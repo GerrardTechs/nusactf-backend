@@ -28,7 +28,7 @@ fastify.get("/scoreboard/stream", scoreboardStreamHandler);
         rateLimit: {
           max: env.RATE_LIMIT_MAX,
           timeWindow: env.RATE_LIMIT_TIME_WINDOW_MS,
-          keyGenerator: (request) => request.user.sub,
+          keyGenerator: (request) => request.user?.sub ?? request.ip,
         },
       },
       handler: submitFlagHandler,

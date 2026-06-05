@@ -3,20 +3,15 @@ import { isAppError } from "../utils/errors.js";
 
 function extractBearerToken(request: FastifyRequest): string | null {
   const header = request.headers.authorization;
-  if (!header?.startsWith("Bearer ")) {
-    return null;
-  }
+  if (!header?.startsWith("Bearer ")) return null;
   return header.slice("Bearer ".length).trim();
 }
 
-/** Validates Supabase JWT on protected routes. */
 export async function authenticate(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> {
   const token = extractBearerToken(request);
-
-  request.server.log.info({ token: token?.slice(0, 20) }, "incoming token prefix");
 
   if (!token) {
     reply.code(401).send({
@@ -28,11 +23,23 @@ export async function authenticate(
   }
 
   try {
-    await request.jwtVerify();
+    // ✅ Verifikasi token lewat Supabase — handle ES256 otomatis
+    const { data, error } = await request.server.supabase.auth.getUser(token);
+
+    if (error || !data.user) {
+      reply.code(401).send({
+        error: "Unauthorized",
+        code: "INVALID_TOKEN",
+        message: "Token tidak valid atau sudah kedaluwarsa.",
+      });
+      return;
+    }
+
+    // ✅ Set user ke request supaya bisa dipakai di handler
+    request.user = { sub: data.user.id, email: data.user.email ?? "" };
+
   } catch (err) {
-    // Tambah log ini sementara
-    request.server.log.warn({ err }, "JWT verify failed");
-    
+    request.server.log.warn({ err }, "Auth failed");
     reply.code(401).send({
       error: "Unauthorized",
       code: "INVALID_TOKEN",

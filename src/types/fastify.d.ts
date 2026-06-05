@@ -5,6 +5,10 @@ declare module "fastify" {
   interface FastifyInstance {
     supabase: SupabaseClient;
   }
+  
+  interface FastifyRequest {
+    user: JwtUserPayload;
+  }
 }
 
 declare module "@fastify/jwt" {

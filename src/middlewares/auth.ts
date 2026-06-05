@@ -23,7 +23,7 @@ export async function authenticate(
   }
 
   try {
-    // ✅ Verifikasi token lewat Supabase — handle ES256 otomatis
+    // ✅ Verifikasi lewat Supabase — handle ES256 otomatis
     const { data, error } = await request.server.supabase.auth.getUser(token);
 
     if (error || !data.user) {
@@ -35,8 +35,11 @@ export async function authenticate(
       return;
     }
 
-    // ✅ Set user ke request supaya bisa dipakai di handler
-    request.user = { sub: data.user.id, email: data.user.email ?? "" };
+    // ✅ Set manual ke request.user
+    request.user = {
+      sub: data.user.id,
+      email: data.user.email ?? "",
+    };
 
   } catch (err) {
     request.server.log.warn({ err }, "Auth failed");

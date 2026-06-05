@@ -16,6 +16,8 @@ export async function authenticate(
 ): Promise<void> {
   const token = extractBearerToken(request);
 
+  request.server.log.info({ token: token?.slice(0, 20) }, "incoming token prefix");
+
   if (!token) {
     reply.code(401).send({
       error: "Unauthorized",
@@ -27,7 +29,10 @@ export async function authenticate(
 
   try {
     await request.jwtVerify();
-  } catch {
+  } catch (err) {
+    // Tambah log ini sementara
+    request.server.log.warn({ err }, "JWT verify failed");
+    
     reply.code(401).send({
       error: "Unauthorized",
       code: "INVALID_TOKEN",

@@ -14,8 +14,8 @@ export async function registerApiRoutes(fastify: FastifyInstance): Promise<void>
   fastify.get("/health", healthHandler);
 
   // Public scoreboard (SSE + snapshot)
-  fastify.get("/api/scoreboard", getScoreboardHandler);
-  fastify.get("/api/scoreboard/stream", scoreboardStreamHandler);
+fastify.get("/scoreboard", getScoreboardHandler);
+fastify.get("/scoreboard/stream", scoreboardStreamHandler);
 
   fastify.register(async (protectedRoutes) => {
     protectedRoutes.addHook("preHandler", authenticate);

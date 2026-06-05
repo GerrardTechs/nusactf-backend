@@ -12,6 +12,6 @@ export async function registerChallengeRoutes(
       await registerPesanRahasiaRoutes(challengeApp);
       await registerFotoKenanganRoutes(challengeApp);
     },
-    { prefix: "/api/challenges" }
+    { prefix: "/challenges" }
   );
 }
